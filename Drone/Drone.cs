@@ -5,7 +5,7 @@ public class Drone : RigidBody2D
 {
     [Export] float ThrusterAngularSpeed = 240f;
     [Export] float ThrusterForce = 300f;
-    [Export] float ForceLimit = 100f;
+    // [Export] float ForceLimit = 100f;
     private float _maxRotationDegree = 75f;
 
     Vector2 LeftDirection = new Vector2();
@@ -28,11 +28,17 @@ public class Drone : RigidBody2D
 
     public override void _PhysicsProcess(float delta)
     {
+        GetRotations(delta);
         GetDirections(delta);
-        GetHumanControl(delta);
 
-        // ApplyImpulse(LeftThruster.Position, LeftForce);
-        // ApplyImpulse(RightThruster.Position, RightForce);
+        if (Input.IsActionPressed("f"))
+        {
+            ApplyImpulse(LeftThruster.Position, LeftForce);
+        }
+        if (Input.IsActionPressed("j"))
+        {
+            ApplyImpulse(RightThruster.Position, RightForce);
+        }
     }
 
     void GetDirections(float delta)
@@ -47,21 +53,21 @@ public class Drone : RigidBody2D
         RightForce = RightDirection * ThrusterForce * delta;
     }
 
-    private void GetHumanControl(float delta)
+    void GetRotations(float delta)
     {
-        if (Input.IsActionPressed("ui_left"))
+        if (Input.IsActionPressed("s"))
         {
             LeftThruster.RotationDegrees += ThrusterAngularSpeed * delta;
         }
-        if (Input.IsActionPressed("ui_right"))
-        {
-            RightThruster.RotationDegrees += ThrusterAngularSpeed * delta;
-        }
-        if (Input.IsActionPressed("ui_up"))
+        if (Input.IsActionPressed("d"))
         {
             LeftThruster.RotationDegrees -= ThrusterAngularSpeed * delta;
         }
-        if (Input.IsActionPressed("ui_down"))
+        if (Input.IsActionPressed("k"))
+        {
+            RightThruster.RotationDegrees += ThrusterAngularSpeed * delta;
+        }
+        if (Input.IsActionPressed("l"))
         {
             RightThruster.RotationDegrees -= ThrusterAngularSpeed * delta;
         }
