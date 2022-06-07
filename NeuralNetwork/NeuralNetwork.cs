@@ -6,7 +6,7 @@ public class NeuralNetwork
 
     public NeuralNetwork(int[] layers)
     {
-        levels = new Level[layers.Length];
+        levels = new Level[layers.Length - 1];
         for (int i = 0; i < layers.Length - 1; i++)
         {
             levels[i] = new Level(layers[i], layers[i + 1]);
@@ -39,7 +39,7 @@ class Level
     double[] Inputs;
     double[] Outputs;
     double[] Biases;
-    double[][] Weights;
+    double[,] Weights;
     Random rng = new Random();
 
     public Level(int inputCount, int outputCount)
@@ -47,11 +47,8 @@ class Level
         Inputs = new double[inputCount];
         Outputs = new double[outputCount];
         Biases = new double[outputCount];
-        Weights = new double[inputCount][];
-        for (int i = 0; i < inputCount; i++)
-        {
-            Weights[i] = new double[outputCount];
-        }
+        Weights = new double[inputCount, outputCount];
+
         Randomize();
     }
 
@@ -61,8 +58,12 @@ class Level
         {
             for (int j = 0; j < Outputs.Length; j++)
             {
-                Weights[i][j] = rng.NextDouble() * 2 - 1;
+                Weights[i, j] = rng.NextDouble() * 2 - 1;
             }
+        }
+
+        for (int i = 0; i < Outputs.Length; i++)
+        {
             Biases[i] = rng.NextDouble() * 2 - 1;
         }
     }
@@ -79,7 +80,7 @@ class Level
             double sum = 0;
             for (int j = 0; j < Inputs.Length; j++)
             {
-                sum += Inputs[j] * Weights[j][i];
+                sum += Inputs[j] * Weights[j, i];
             }
 
             if (sum > Biases[i])
@@ -104,11 +105,11 @@ class Level
                 double rw = rng.NextDouble();
                 if (rw < rate)
                 {
-                    Weights[i][j] = rng.NextDouble() * 2 - 1;
+                    Weights[i, j] = rng.NextDouble() * 2 - 1;
                 }
                 else if (rw < rate * 4)
                 {
-                    Weights[i][j] = SoftMutate(Weights[i][j], softRate);
+                    Weights[i, j] = SoftMutate(Weights[i, j], softRate);
                 }
             }
             double rb = rng.NextDouble();
