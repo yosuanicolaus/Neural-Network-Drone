@@ -20,6 +20,7 @@ public class Drone : RigidBody2D
     Node2D RightThruster;
     Node2D LTTarget;
     Node2D RTTarget;
+    Node2D TargetPoint;
 
     public override void _Ready()
     {
@@ -77,6 +78,11 @@ public class Drone : RigidBody2D
 
         LeftThruster.RotationDegrees = Mathf.Clamp(LeftThruster.RotationDegrees, -_maxRotationDegree, _maxRotationDegree);
         RightThruster.RotationDegrees = Mathf.Clamp(RightThruster.RotationDegrees, -_maxRotationDegree, _maxRotationDegree);
+    }
+
+    public void SetTarget(Node2D target)
+    {
+        TargetPoint = target;
     }
 
     public void IncrementPoint()

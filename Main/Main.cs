@@ -3,6 +3,7 @@ using System;
 
 public class Main : Node2D
 {
+    Drone Drone;
     Area2D Point;
     Vector2[] Positions = new Vector2[10] {
         new Vector2(747, 495),
@@ -21,6 +22,8 @@ public class Main : Node2D
     public override void _Ready()
     {
         Point = GetNode<Area2D>("Point");
+        Drone = GetNode<Drone>("Drone");
+        Drone.SetTarget(Point);
         NextPointPosition();
     }
 
@@ -42,6 +45,15 @@ public class Main : Node2D
             drone.IncrementPoint();
             NextPointPosition();
             GD.Print("Point: " + drone.Point);
+        }
+    }
+
+    public override void _Input(InputEvent @event)
+    {
+        // For fast reload.
+        if (@event.IsActionPressed("ui_cancel"))
+        {
+            GetTree().ReloadCurrentScene();
         }
     }
 }
