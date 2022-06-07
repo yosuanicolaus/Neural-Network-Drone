@@ -8,6 +8,9 @@ public class Drone : RigidBody2D
     // [Export] float ForceLimit = 100f;
     private float _maxRotationDegree = 75f;
 
+    public int Point = 0;
+    public float Time = 0f;
+
     Vector2 LeftDirection = new Vector2();
     Vector2 RightDirection = new Vector2();
     Vector2 LeftForce = new Vector2();
@@ -74,5 +77,10 @@ public class Drone : RigidBody2D
 
         LeftThruster.RotationDegrees = Mathf.Clamp(LeftThruster.RotationDegrees, -_maxRotationDegree, _maxRotationDegree);
         RightThruster.RotationDegrees = Mathf.Clamp(RightThruster.RotationDegrees, -_maxRotationDegree, _maxRotationDegree);
+    }
+
+    public void IncrementPoint()
+    {
+        Point++;
     }
 }
