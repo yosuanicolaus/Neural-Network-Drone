@@ -20,7 +20,7 @@ public class Drone : RigidBody2D
     Node2D RightThruster;
     Node2D LTTarget;
     Node2D RTTarget;
-    Node2D TargetPoint;
+    public Node2D TargetPoint;
 
     NeuralNetwork Brain = new NeuralNetwork(new int[] { 8, 10, 10, 4 });
     double[] Inputs = new double[8];
@@ -103,15 +103,5 @@ public class Drone : RigidBody2D
         (LeftThruster.RotationDegrees, -_maxRotationDegree, _maxRotationDegree);
         RightThruster.RotationDegrees = Mathf.Clamp
         (RightThruster.RotationDegrees, -_maxRotationDegree, _maxRotationDegree);
-    }
-
-    public void SetTarget(Node2D target)
-    {
-        TargetPoint = target;
-    }
-
-    public void IncrementPoint()
-    {
-        Point++;
     }
 }
