@@ -7,5 +7,3 @@
 script = ExtResource( 2 )
 
 [node name="Point" parent="." instance=ExtResource( 3 )]
-
-[connection signal="body_entered" from="Point" to="." method="_on_Point_body_entered"]
