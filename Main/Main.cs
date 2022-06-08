@@ -3,7 +3,8 @@ using System;
 
 public class Main : Node2D
 {
-    Drone Drone;
+    PackedScene droneScene = (PackedScene)ResourceLoader.Load("res://Drone/Drone.tscn");
+    Population population;
     Area2D Point;
     Vector2[] Positions = new Vector2[10] {
         new Vector2(747, 495),
@@ -22,9 +23,14 @@ public class Main : Node2D
     public override void _Ready()
     {
         Point = GetNode<Area2D>("Point");
-        Drone = GetNode<Drone>("Drone");
-        Drone.SetTarget(Point);
         NextPointPosition();
+        population = new Population(droneScene, 25);
+
+        foreach (Drone drone in population.Scenes)
+        {
+            drone.SetTarget(Point);
+            AddChild(drone);
+        }
     }
 
     void NextPointPosition()
@@ -37,6 +43,7 @@ public class Main : Node2D
         }
     }
 
+    // disconnected
     void _on_Point_body_entered(object body)
     {
         var drone = body as Drone;
