@@ -3,26 +3,29 @@ using System;
 
 public class Drone : RigidBody2D
 {
+    [Signal] public delegate void Crashed();
+
     float ThrusterAngularSpeed = 240f;
     float ThrusterForce = 300f;
     private float _maxRotationDegree = 75f;
 
     public int Point = 0;
     public float Time = 0f;
+    public Node2D TargetPoint;
 
     Vector2 LeftDirection = new Vector2();
     Vector2 RightDirection = new Vector2();
     Vector2 LeftForce = new Vector2();
     Vector2 RightForce = new Vector2();
-    Vector2 Velocity = new Vector2();
+    // Vector2 Velocity = new Vector2();
+    Vector2 CrashOffset = new Vector2(30, 30);
 
     Node2D LeftThruster;
     Node2D RightThruster;
     Node2D LTTarget;
     Node2D RTTarget;
-    public Node2D TargetPoint;
 
-    NeuralNetwork Brain = new NeuralNetwork(new int[] { 8, 10, 10, 4 });
+    public NeuralNetwork Brain = new NeuralNetwork(new int[] { 8, 10, 10, 4 });
     double[] Inputs = new double[8];
     double[] Outputs = new double[4];
 
@@ -37,13 +40,15 @@ public class Drone : RigidBody2D
 
     public override void _PhysicsProcess(float delta)
     {
-        FeedBrain(delta);
+        FeedBrain();
+        GetForces(delta);
         Activate(delta);
         ClampDegrees();
-        GetDirections(delta);
+        CrashCheck();
+        Time += delta;
     }
 
-    void FeedBrain(float delta)
+    void FeedBrain()
     {
         Inputs[0] = TargetPoint.Position.x - Position.x;
         Inputs[1] = TargetPoint.Position.y - Position.y;
@@ -85,11 +90,8 @@ public class Drone : RigidBody2D
         }
     }
 
-    void GetDirections(float delta)
+    void GetForces(float delta)
     {
-        LeftForce = Vector2.Zero;
-        RightForce = Vector2.Zero;
-
         LeftDirection = (LTTarget.GlobalPosition - LeftThruster.GlobalPosition).Normalized();
         RightDirection = (RTTarget.GlobalPosition - RightThruster.GlobalPosition).Normalized();
 
@@ -103,5 +105,16 @@ public class Drone : RigidBody2D
         (LeftThruster.RotationDegrees, -_maxRotationDegree, _maxRotationDegree);
         RightThruster.RotationDegrees = Mathf.Clamp
         (RightThruster.RotationDegrees, -_maxRotationDegree, _maxRotationDegree);
+    }
+
+    void CrashCheck()
+    {
+        Vector2 viewport = GetViewportRect().Size;
+        if (Position.x < -CrashOffset.x || Position.x > viewport.x + CrashOffset.x ||
+            Position.y < -CrashOffset.y || Position.y > viewport.y + CrashOffset.y)
+        {
+            EmitSignal("Crashed");
+            QueueFree();
+        }
     }
 }

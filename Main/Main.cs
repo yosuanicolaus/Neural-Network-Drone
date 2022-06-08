@@ -20,6 +20,7 @@ public class Main : Node2D
             Drone drone = (Drone)Drones.Scenes[i];
             Point point = (Point)Points.Scenes[i];
             drone.TargetPoint = point;
+            drone.Connect("Crashed", this, "onDroneCrashed");
             AddChild(drone);
             AddChild(point);
         }
@@ -31,6 +32,16 @@ public class Main : Node2D
         if (@event.IsActionPressed("ui_cancel"))
         {
             GetTree().ReloadCurrentScene();
+        }
+    }
+
+    void onDroneCrashed()
+    {
+        GD.Print("Crashed!");
+        Size--;
+        if (Size == 0)
+        {
+            // GetTree().ReloadCurrentScene();
         }
     }
 }
