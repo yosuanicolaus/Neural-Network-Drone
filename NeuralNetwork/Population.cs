@@ -4,13 +4,15 @@ using System;
 public class Population : Godot.Object
 {
     public Node[] Scenes;
+    public PackedScene _scene;
 
     public readonly int Generation = 0;
     public readonly int Size;
-    public float MutationRate = 0.025f;
+
 
     public Population(PackedScene scene, int size)
     {
+        _scene = scene;
         Size = size;
         Scenes = new Node[size];
 
@@ -26,12 +28,20 @@ public class DronePopulation : Population
 {
     public Drone[] DroneScenes;
     Random rng = new Random();
+
+    public double MutationRate = 0.025;
+    public double SoftMutationRate = 0.25;
+
     NeuralNetwork[] brains;
+    double[] fitness;
+    double totalScore = 0;
 
     public DronePopulation(PackedScene scene, int size) : base(scene, size)
     {
         DroneScenes = new Drone[size];
         brains = new NeuralNetwork[size];
+        fitness = new double[size];
+
         for (int i = 0; i < size; i++)
         {
             DroneScenes[i] = (Drone)Scenes[i];
@@ -41,58 +51,49 @@ public class DronePopulation : Population
 
     void Selection()
     {
+        totalScore = 0;
 
+        for (int i = 0; i < Size; i++)
+        {
+            DroneScenes[i].CalculateScore();
+            totalScore += DroneScenes[i].Score;
+            fitness[i] = DroneScenes[i].Score;
+        }
+
+        for (int i = 0; i < Size; i++)
+        {
+            NeuralNetwork newBrain = SelectBrain().Copy();
+            newBrain.Mutate(MutationRate, SoftMutationRate);
+            brains[i] = newBrain;
+        }
     }
 
-    void UpdateBrains()
+    NeuralNetwork SelectBrain()
     {
+        int i = -1;
+        double r = rng.NextDouble() * totalScore;
+        while (r > 0)
+        {
+            i++;
+            r -= fitness[i];
+        }
+        return brains[i];
+    }
 
+    void Restart()
+    {
+        for (int i = 0; i < Size; i++)
+        {
+            Scenes[i].QueueFree();
+            Scenes[i] = (Node)_scene.Instance();
+            DroneScenes[i] = (Drone)Scenes[i];
+            DroneScenes[i].Brain = brains[i];
+        }
     }
 
     public void Reincarnate()
     {
         Selection();
-        UpdateBrains();
+        Restart();
     }
-
-    // void Selection()
-    // {
-    //     float totalScore = 0f;
-    //     float[] scores = new float[Size];
-
-    //     foreach (Node scene in Scenes)
-    //     {
-    //         var drone = (Drone)scene;
-    //         drone.CalculateScore();
-    //         totalScore += drone.Score;
-    //     }
-
-    // }
-
-    // NeuralNetwork PoolSelection(float[] scores, float totalScore)
-    // {
-    //     int i = -1;
-    //     float r = (float)rng.NextDouble() * totalScore;
-
-    //     while (r > 0)
-    //     {
-    //         i++;
-    //         r -= scores[i];
-    //     }
-
-    //     return brains[i];
-    // }
-
-    // public void Reincarnate()
-    // {
-    //     Selection();
-
-    //     for (int i = 0; i < Size; i++)
-    //     {
-    //         Scenes[i].QueueFree();
-    //         Scenes[i] = (Node)_scene.Instance();
-    //         Drone drone = (Drone)Scenes[i];
-    //         drone.Brain = brains[i];
-    //     }
-    // }
 }
