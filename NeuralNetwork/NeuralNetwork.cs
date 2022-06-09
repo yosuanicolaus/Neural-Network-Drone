@@ -66,13 +66,13 @@ class Level
     {
         for (int i = 0; i < Inputs.Length; i++)
         {
-            for (int j = 0; j < Outputs.Length; j++)
+            for (int o = 0; o < Outputs.Length; o++)
             {
-                Weights[i, j] = rng.NextDouble() * 2 - 1;
+                Weights[i, o] = rng.NextDouble() * 2 - 1;
 
                 if (i == 0)
                 {
-                    Biases[j] = rng.NextDouble() * 2 - 1;
+                    Biases[o] = rng.NextDouble() * 2 - 1;
                 }
             }
         }
@@ -85,21 +85,21 @@ class Level
             Inputs[i] = newInput[i];
         }
 
-        for (int i = 0; i < Outputs.Length; i++)
+        for (int o = 0; o < Outputs.Length; o++)
         {
             double sum = 0;
-            for (int j = 0; j < Inputs.Length; j++)
+            for (int i = 0; i < Inputs.Length; i++)
             {
-                sum += Inputs[j] * Weights[j, i];
+                sum += Inputs[i] * Weights[i, o];
             }
 
-            if (sum > Biases[i])
+            if (sum > Biases[o])
             {
-                Outputs[i] = 1;
+                Outputs[o] = 1;
             }
             else
             {
-                Outputs[i] = 0;
+                Outputs[o] = 0;
             }
         }
 
@@ -110,34 +110,43 @@ class Level
     {
         for (int i = 0; i < Inputs.Length; i++)
         {
-            for (int j = 0; j < Outputs.Length; j++)
+            for (int o = 0; o < Outputs.Length; o++)
             {
+                if (i == 0)
+                {
+                    double rb = rng.NextDouble();
+                    if (rb < rate)
+                    {
+                        Biases[o] = rng.NextDouble() * 2 - 1;
+                    }
+                    else
+                    {
+                        Biases[o] = SoftMutate(Biases[o], softRate);
+                    }
+                }
+
                 double rw = rng.NextDouble();
                 if (rw < rate)
                 {
-                    Weights[i, j] = rng.NextDouble() * 2 - 1;
+                    Weights[i, o] = rng.NextDouble() * 2 - 1;
                 }
-                else if (rw < rate * 4)
+                else
                 {
-                    Weights[i, j] = SoftMutate(Weights[i, j], softRate);
+                    Weights[i, o] = SoftMutate(Weights[i, o], softRate);
                 }
-            }
-            double rb = rng.NextDouble();
-            if (rb < rate)
-            {
-                Biases[i] = rng.NextDouble() * 2 - 1;
-            }
-            else if (rb < rate * 4)
-            {
-                Biases[i] = SoftMutate(Biases[i], softRate);
             }
         }
     }
 
-    double SoftMutate(double value, double rate)
+    double SoftMutate(double value, double softRate)
     {
         // Lerp to <Random>(-1, 1) at a rate
-        return value + ((rng.NextDouble() * 2 - 1) - value) * rate;
+        return Lerp(value, rng.NextDouble() * 2 - 1, softRate);
+    }
+
+    static double Lerp(double a, double b, double t)
+    {
+        return a + (b - a) * t;
     }
 
     public Level Copy()
