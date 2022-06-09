@@ -9,15 +9,16 @@ public class Drone : RigidBody2D
     float ThrusterForce = 300f;
     private float _maxRotationDegree = 75f;
 
-    public int Point = 0;
-    public float Time = 0f;
     public Node2D TargetPoint;
+    public int Point = 0;
+    public float Score = 0f;
+    private float _time = 0f;
+    private bool _crashed = false;
 
     Vector2 LeftDirection = new Vector2();
     Vector2 RightDirection = new Vector2();
     Vector2 LeftForce = new Vector2();
     Vector2 RightForce = new Vector2();
-    // Vector2 Velocity = new Vector2();
     Vector2 CrashOffset = new Vector2(30, 30);
 
     Node2D LeftThruster;
@@ -45,7 +46,7 @@ public class Drone : RigidBody2D
         Activate(delta);
         ClampDegrees();
         CrashCheck();
-        Time += delta;
+        _time += delta;
     }
 
     void FeedBrain()
@@ -114,7 +115,24 @@ public class Drone : RigidBody2D
             Position.y < -CrashOffset.y || Position.y > viewport.y + CrashOffset.y)
         {
             EmitSignal("Crashed");
-            QueueFree();
+            _crashed = true;
+            SetPhysicsProcess(false);
+            // CalculateScore will be called by Drone's Population class
+            // CalculateScore();
+            // QueueFree();
+        }
+    }
+
+    public void CalculateScore()
+    {
+        if (_crashed && _time < 15)
+        {
+            Score = Point;
+        }
+        else
+        {
+            float pointPerMinute = 60 / _time * Point;
+            Score = Point + pointPerMinute;
         }
     }
 }
