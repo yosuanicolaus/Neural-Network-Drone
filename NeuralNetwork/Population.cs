@@ -9,7 +9,6 @@ public class Population : Godot.Object
     public readonly int Generation = 0;
     public readonly int Size;
 
-
     public Population(PackedScene scene, int size)
     {
         _scene = scene;
@@ -19,6 +18,14 @@ public class Population : Godot.Object
         for (int i = 0; i < size; i++)
         {
             Scenes[i] = (Node)scene.Instance();
+        }
+    }
+
+    public void Reinstance()
+    {
+        for (int i = 0; i < Size; i++)
+        {
+            Scenes[i] = (Node)_scene.Instance();
         }
     }
 }
@@ -56,6 +63,7 @@ public class DronePopulation : Population
         for (int i = 0; i < Size; i++)
         {
             fitness[i] = DroneScenes[i].Score;
+            totalScore += DroneScenes[i].Score;
         }
 
         for (int i = 0; i < Size; i++)

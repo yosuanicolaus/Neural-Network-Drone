@@ -14,7 +14,11 @@ public class Main : Node2D
     {
         Drones = new DronePopulation(droneScene, Size);
         Points = new Population(pointScene, Size);
+        StartSimulation();
+    }
 
+    void StartSimulation()
+    {
         for (int i = 0; i < Size; i++)
         {
             Drone drone = Drones.DroneScenes[i];
@@ -43,7 +47,8 @@ public class Main : Node2D
         {
             Size = Drones.Size;
             Drones.Reincarnate();
-            // GetTree().ReloadCurrentScene();
+            Points.Reinstance();
+            StartSimulation();
         }
     }
 }
