@@ -25,10 +25,7 @@ public class Population : Godot.Object
     {
         for (int i = 0; i < Size; i++)
         {
-<<<<<<< HEAD
-=======
             Scenes[i].QueueFree();
->>>>>>> 4f96aeb (automatic restart simulation after drones crashed)
             Scenes[i] = (Node)_scene.Instance();
         }
     }
