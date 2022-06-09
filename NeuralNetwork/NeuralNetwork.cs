@@ -32,6 +32,16 @@ public class NeuralNetwork
             levels[i].Mutate(rate, softRate);
         }
     }
+
+    public NeuralNetwork Copy()
+    {
+        NeuralNetwork copy = new NeuralNetwork(new int[levels.Length + 1]);
+        for (int i = 0; i < levels.Length; i++)
+        {
+            copy.levels[i] = levels[i].Copy();
+        }
+        return copy;
+    }
 }
 
 class Level
@@ -59,12 +69,12 @@ class Level
             for (int j = 0; j < Outputs.Length; j++)
             {
                 Weights[i, j] = rng.NextDouble() * 2 - 1;
-            }
-        }
 
-        for (int i = 0; i < Outputs.Length; i++)
-        {
-            Biases[i] = rng.NextDouble() * 2 - 1;
+                if (i == 0)
+                {
+                    Biases[j] = rng.NextDouble() * 2 - 1;
+                }
+            }
         }
     }
 
@@ -127,6 +137,25 @@ class Level
     double SoftMutate(double value, double rate)
     {
         // Lerp to <Random>(-1, 1) at a rate
-        return value + (rng.NextDouble() * 2 - 1 - value) * rate;
+        return value + ((rng.NextDouble() * 2 - 1) - value) * rate;
+    }
+
+    public Level Copy()
+    {
+        Level copy = new Level(Inputs.Length, Outputs.Length);
+
+        for (int i = 0; i < Inputs.Length; i++)
+        {
+            for (int j = 0; j < Outputs.Length; j++)
+            {
+                copy.Weights[i, j] = Weights[i, j];
+
+                if (i == 0)
+                {
+                    copy.Biases[j] = Biases[j];
+                }
+            }
+        }
+        return copy;
     }
 }
