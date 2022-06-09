@@ -11,8 +11,8 @@ public class Drone : RigidBody2D
 
     public Node2D TargetPoint;
     public int Point = 0;
-    public float Score = 0f;
-    private float _time = 0f;
+    public double Score = 0f;
+    private double _time = 0f;
     private bool _crashed = false;
 
     Vector2 LeftDirection = new Vector2();
@@ -117,8 +117,8 @@ public class Drone : RigidBody2D
             EmitSignal("Crashed");
             _crashed = true;
             SetPhysicsProcess(false);
-            // CalculateScore will be called by Drone's Population class
-            // CalculateScore();
+            CalculateScore();
+            // DronePopulation is in charge of freeing this node
             // QueueFree();
         }
     }
@@ -127,11 +127,12 @@ public class Drone : RigidBody2D
     {
         if (_crashed && _time < 15)
         {
-            Score = Point;
+            if (Point > 0) Score = Point;
+            else Score = 15 / _time;
         }
         else
         {
-            float pointPerMinute = 60 / _time * Point;
+            double pointPerMinute = 60 / _time * Point;
             Score = Point + pointPerMinute;
         }
     }

@@ -55,8 +55,6 @@ public class DronePopulation : Population
 
         for (int i = 0; i < Size; i++)
         {
-            DroneScenes[i].CalculateScore();
-            totalScore += DroneScenes[i].Score;
             fitness[i] = DroneScenes[i].Score;
         }
 
