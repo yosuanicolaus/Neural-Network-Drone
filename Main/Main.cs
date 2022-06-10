@@ -10,8 +10,13 @@ public class Main : Node2D
     Population Points;
     public int Size = 100;
 
+    Label Gen;
+    Label Best;
+
     public override void _Ready()
     {
+        Gen = GetNode<Label>("UI/Gen");
+        Best = GetNode<Label>("UI/Best");
         Drones = new DronePopulation(droneScene, Size);
         Points = new Population(pointScene, Size);
         StartSimulation();
@@ -55,5 +60,7 @@ public class Main : Node2D
         Drones.Reincarnate();
         Points.Reinstance();
         StartSimulation();
+        Gen.Text = Drones.Generation.ToString();
+        Best.Text = Drones.OverallBestScore.ToString();
     }
 }

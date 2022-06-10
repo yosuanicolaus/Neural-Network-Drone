@@ -4,3 +4,31 @@
 
 [node name="Main" type="Node2D"]
 script = ExtResource( 2 )
+
+[node name="UI" type="Control" parent="."]
+margin_right = 40.0
+margin_bottom = 40.0
+
+[node name="Text" type="Label" parent="UI"]
+margin_right = 40.0
+margin_bottom = 14.0
+text = "Gen"
+
+[node name="Text2" type="Label" parent="UI"]
+margin_top = 14.0
+margin_right = 40.0
+margin_bottom = 28.0
+text = "Best"
+
+[node name="Gen" type="Label" parent="UI"]
+margin_left = 63.0
+margin_right = 103.0
+margin_bottom = 14.0
+text = "0"
+
+[node name="Best" type="Label" parent="UI"]
+margin_left = 63.0
+margin_top = 14.0
+margin_right = 103.0
+margin_bottom = 28.0
+text = "0"

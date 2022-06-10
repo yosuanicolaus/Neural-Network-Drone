@@ -127,10 +127,6 @@ class Level
                     {
                         Biases[o] = rng.NextDouble() * 2 - 1;
                     }
-                    // else
-                    // {
-                    //     Biases[o] = SoftMutate(Biases[o], softRate);
-                    // }
                 }
 
                 double rw = rng.NextDouble();
@@ -138,10 +134,6 @@ class Level
                 {
                     Weights[i, o] = rng.NextDouble() * 2 - 1;
                 }
-                // else
-                // {
-                //     Weights[i, o] = SoftMutate(Weights[i, o], softRate);
-                // }
             }
         }
     }
