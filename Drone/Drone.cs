@@ -7,7 +7,6 @@ public class Drone : RigidBody2D
 
     float ThrusterAngularSpeed = 240f;
     float ThrusterForce = 300f;
-    private float _maxRotationDegree = 75f;
 
     public Node2D TargetPoint;
     public int Point = 0;
@@ -29,6 +28,8 @@ public class Drone : RigidBody2D
     Node2D RightThruster;
     Node2D LTTarget;
     Node2D RTTarget;
+    Color ActiveColor = new Color(1, 1, 1, 1);
+    Color InactiveColor = new Color(0.5f, 0.5f, 0.5f, 1);
 
     public NeuralNetwork Brain = new NeuralNetwork(new int[] { 8, 10, 10, 4 });
     double[] Inputs = new double[8];
@@ -49,7 +50,6 @@ public class Drone : RigidBody2D
         GetForces(delta);
         Activate(delta);
         UpdateDistance();
-        ClampDegrees();
         CrashCheck();
         _time += delta;
     }
@@ -89,10 +89,20 @@ public class Drone : RigidBody2D
         if (Outputs[2] > 0.5)
         {
             ApplyImpulse(LeftThruster.Position, LeftForce);
+            LeftThruster.Modulate = ActiveColor;
+        }
+        else
+        {
+            LeftThruster.Modulate = InactiveColor;
         }
         if (Outputs[3] > 0.5)
         {
             ApplyImpulse(RightThruster.Position, RightForce);
+            RightThruster.Modulate = ActiveColor;
+        }
+        else
+        {
+            RightThruster.Modulate = InactiveColor;
         }
     }
 
@@ -111,14 +121,6 @@ public class Drone : RigidBody2D
         bestDistance = Math.Min(bestDistance, currentDistance);
     }
 
-    void ClampDegrees()
-    {
-        LeftThruster.RotationDegrees = Mathf.Clamp
-        (LeftThruster.RotationDegrees, -_maxRotationDegree, _maxRotationDegree);
-        RightThruster.RotationDegrees = Mathf.Clamp
-        (RightThruster.RotationDegrees, -_maxRotationDegree, _maxRotationDegree);
-    }
-
     void CrashCheck()
     {
         Vector2 viewport = GetViewportRect().Size;
@@ -127,9 +129,10 @@ public class Drone : RigidBody2D
         {
             EmitSignal("Crashed");
             _crashed = true;
-            SetPhysicsProcess(false);
             Sleeping = true;
+            TargetPoint.Hide();
             Hide();
+            SetPhysicsProcess(false);
             CalculateScore();
             // DronePopulation is in charge of freeing this node
             // QueueFree();

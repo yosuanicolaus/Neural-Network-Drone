@@ -33,18 +33,19 @@ shape = SubResource( 1 )
 [node name="Display" type="Node2D" parent="."]
 
 [node name="Balancer" type="MeshInstance2D" parent="Display"]
-modulate = Color( 0.160784, 0.576471, 0.807843, 1 )
+modulate = Color( 0.160784, 0.807843, 0.807843, 1 )
 mesh = SubResource( 3 )
 
 [node name="Body" type="MeshInstance2D" parent="Display"]
-modulate = Color( 0.105882, 0.423529, 0.545098, 1 )
+modulate = Color( 0, 0.203922, 0.286275, 1 )
 mesh = SubResource( 2 )
 
 [node name="Eye" type="MeshInstance2D" parent="Display"]
-modulate = Color( 0, 0.690196, 0.745098, 1 )
+modulate = Color( 0, 1.4, 1.5, 1 )
 mesh = SubResource( 6 )
 
 [node name="Left" type="Node2D" parent="."]
+modulate = Color( 0.54902, 0.54902, 0.54902, 1 )
 position = Vector2( -56, 0 )
 
 [node name="Thruster" type="MeshInstance2D" parent="Left"]
@@ -55,6 +56,7 @@ mesh = SubResource( 4 )
 position = Vector2( 0, -20 )
 
 [node name="Right" type="Node2D" parent="."]
+modulate = Color( 0.54902, 0.54902, 0.54902, 1 )
 position = Vector2( 56, 0 )
 
 [node name="Thruster" type="MeshInstance2D" parent="Right"]
