@@ -60,18 +60,25 @@ public class DronePopulation : Population
     void Selection()
     {
         totalScore = 0;
+        double bestScore = 0;
+        NeuralNetwork bestBrain = DroneScenes[0].Brain;
 
         for (int i = 0; i < Size; i++)
         {
-            fitness[i] = DroneScenes[i].Score;
-            totalScore += DroneScenes[i].Score;
+            double score = DroneScenes[i].Score;
+            fitness[i] = score;
+            totalScore += score;
+            if (score > bestScore)
+            {
+                bestScore = score;
+                bestBrain = DroneScenes[i].Brain;
+            }
         }
 
         for (int i = 0; i < Size; i++)
         {
-            NeuralNetwork newBrain = SelectBrain().Copy();
-            newBrain.Mutate(MutationRate, SoftMutationRate);
-            brains[i] = newBrain;
+            brains[i] = bestBrain.Copy();
+            brains[i].SoftMutate(SoftMutationRate);
         }
     }
 

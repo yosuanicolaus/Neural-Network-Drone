@@ -25,11 +25,19 @@ public class NeuralNetwork
         return outputs;
     }
 
-    public void Mutate(double rate = 0.025, double softRate = 0.25)
+    public void Mutate(double rate)
     {
         for (int i = 0; i < levels.Length; i++)
         {
-            levels[i].Mutate(rate, softRate);
+            levels[i].Mutate(rate);
+        }
+    }
+
+    public void SoftMutate(double softRate)
+    {
+        for (int i = 0; i < levels.Length; i++)
+        {
+            levels[i].SoftMutate(softRate);
         }
     }
 
@@ -106,7 +114,7 @@ class Level
         return Outputs;
     }
 
-    public void Mutate(double rate = 0.025, double softRate = 0.25)
+    public void Mutate(double rate)
     {
         for (int i = 0; i < Inputs.Length; i++)
         {
@@ -119,10 +127,10 @@ class Level
                     {
                         Biases[o] = rng.NextDouble() * 2 - 1;
                     }
-                    else
-                    {
-                        Biases[o] = SoftMutate(Biases[o], softRate);
-                    }
+                    // else
+                    // {
+                    //     Biases[o] = SoftMutate(Biases[o], softRate);
+                    // }
                 }
 
                 double rw = rng.NextDouble();
@@ -130,18 +138,28 @@ class Level
                 {
                     Weights[i, o] = rng.NextDouble() * 2 - 1;
                 }
-                else
-                {
-                    Weights[i, o] = SoftMutate(Weights[i, o], softRate);
-                }
+                // else
+                // {
+                //     Weights[i, o] = SoftMutate(Weights[i, o], softRate);
+                // }
             }
         }
     }
 
-    double SoftMutate(double value, double softRate)
+    public void SoftMutate(double softRate)
     {
-        // Lerp to <Random>(-1, 1) at a rate
-        return Lerp(value, rng.NextDouble() * 2 - 1, softRate);
+        for (int i = 0; i < Inputs.Length; i++)
+        {
+            for (int o = 0; o < Outputs.Length; o++)
+            {
+                if (i == 0)
+                {
+                    Biases[o] = Lerp(Biases[o], rng.NextDouble() * 2 - 1, softRate);
+                }
+
+                Weights[i, o] = Lerp(Weights[i, o], rng.NextDouble() * 2 - 1, softRate);
+            }
+        }
     }
 
     static double Lerp(double a, double b, double t)
