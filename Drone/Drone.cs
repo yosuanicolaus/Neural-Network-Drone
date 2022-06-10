@@ -12,14 +12,18 @@ public class Drone : RigidBody2D
     public Node2D TargetPoint;
     public int Point = 0;
     public double Score = 0f;
-    private double _time = 0f;
+    double startDistance;
+    double currentDistance;
+    double bestDistance;
+    private double _time = 0;
     private bool _crashed = false;
+    private double _scoreTreshold = 0.01;
 
     Vector2 LeftDirection = new Vector2();
     Vector2 RightDirection = new Vector2();
     Vector2 LeftForce = new Vector2();
     Vector2 RightForce = new Vector2();
-    Vector2 CrashOffset = new Vector2(30, 30);
+    Vector2 CrashOffset = new Vector2(50, 50);
 
     Node2D LeftThruster;
     Node2D RightThruster;
@@ -44,6 +48,7 @@ public class Drone : RigidBody2D
         FeedBrain();
         GetForces(delta);
         Activate(delta);
+        UpdateDistance();
         ClampDegrees();
         CrashCheck();
         _time += delta;
@@ -100,6 +105,12 @@ public class Drone : RigidBody2D
         RightForce = RightDirection * ThrusterForce * delta;
     }
 
+    void UpdateDistance()
+    {
+        currentDistance = Position.DistanceTo(TargetPoint.Position);
+        bestDistance = Math.Min(bestDistance, currentDistance);
+    }
+
     void ClampDegrees()
     {
         LeftThruster.RotationDegrees = Mathf.Clamp
@@ -117,23 +128,40 @@ public class Drone : RigidBody2D
             EmitSignal("Crashed");
             _crashed = true;
             SetPhysicsProcess(false);
+            Sleeping = true;
+            Hide();
             CalculateScore();
             // DronePopulation is in charge of freeing this node
             // QueueFree();
         }
     }
 
+    public void SetTarget(Node2D target)
+    {
+        TargetPoint = target;
+        currentDistance = Position.DistanceTo(TargetPoint.Position);
+        startDistance = currentDistance;
+        bestDistance = currentDistance;
+    }
+
+    public void HitTarget()
+    {
+        Point++;
+        currentDistance = Position.DistanceTo(TargetPoint.Position);
+        startDistance = currentDistance;
+        bestDistance = currentDistance;
+    }
+
     public void CalculateScore()
     {
-        if (_crashed && _time < 15)
-        {
-            if (Point > 0) Score = Point;
-            else Score = 15 / _time;
-        }
-        else
+        double distanceScore = 1 - (bestDistance / startDistance);
+        Score = Point + distanceScore;
+        Score = Math.Pow(Score, 2);
+        if (_time > 15)
         {
             double pointPerMinute = 60 / _time * Point;
-            Score = Point + pointPerMinute;
+            Score += pointPerMinute;
         }
+        Score = Math.Max(Score, _scoreTreshold);
     }
 }

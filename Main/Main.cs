@@ -8,7 +8,7 @@ public class Main : Node2D
 
     DronePopulation Drones;
     Population Points;
-    public int Size = 5;
+    public int Size = 100;
 
     public override void _Ready()
     {
@@ -23,7 +23,8 @@ public class Main : Node2D
         {
             Drone drone = Drones.DroneScenes[i];
             Point point = (Point)Points.Scenes[i];
-            drone.TargetPoint = point;
+            point.NextPointPosition();
+            drone.SetTarget(point);
             drone.Connect("Crashed", this, "onDroneCrashed");
             AddChild(drone);
             AddChild(point);
@@ -35,20 +36,24 @@ public class Main : Node2D
         // For fast reload.
         if (@event.IsActionPressed("ui_cancel"))
         {
-            GetTree().ReloadCurrentScene();
+            Restart();
         }
     }
 
     void onDroneCrashed()
     {
-        GD.Print("Crashed!");
         Size--;
         if (Size == 0)
         {
-            Size = Drones.Size;
-            Drones.Reincarnate();
-            Points.Reinstance();
-            StartSimulation();
+            Restart();
         }
+    }
+
+    void Restart()
+    {
+        Size = Drones.Size;
+        Drones.Reincarnate();
+        Points.Reinstance();
+        StartSimulation();
     }
 }
